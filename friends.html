@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friends Surprise 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+height:100vh;
+overflow:hidden;
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#ffdde1,#ee9ca7,#d299c2);
+background-size:400% 400%;
+animation:bgMove 12s ease infinite;
+position:relative;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+/* Start Button */
+.start-btn{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+padding:18px 35px;
+font-size:18px;
+border:none;
+border-radius:50px;
+background:linear-gradient(45deg,#ff4e9b,#ff8ac6);
+color:white;
+cursor:pointer;
+box-shadow:0 0 20px rgba(255,0,128,0.6);
+font-weight:600;
+z-index:10;
+animation:pulse 2s infinite;
+text-align:center;
+max-width:80%;
+}
+
+@keyframes pulse{
+0%,100%{box-shadow:0 0 15px rgba(255,0,128,0.5);}
+50%{box-shadow:0 0 35px rgba(255,0,128,0.9);}
+}
+
+/* Floating Hearts */
+.heart{
+position:absolute;
+font-size:18px;
+opacity:0.6;
+animation:floatUp linear infinite;
+pointer-events:none;
+}
+
+@keyframes floatUp{
+from{transform:translateY(100vh);}
+to{transform:translateY(-10vh);}
+}
+
+/* Bubble */
+.friend-bubble{
+position:absolute;
+width:110px;
+height:110px;
+border-radius:50%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:10px;
+font-weight:600;
+font-size:14px;
+color:#fff;
+background:linear-gradient(145deg,#ff6ec4,#7873f5);
+box-shadow:0 0 20px rgba(255,255,255,0.7);
+animation:floatBubble 3s ease-in-out infinite alternate;
+cursor:pointer;
+transition:0.3s;
+}
+
+.friend-bubble span{
+font-size:20px;
+margin-bottom:4px;
+}
+
+.friend-bubble:hover{
+transform:scale(1.1);
+}
+
+@keyframes floatBubble{
+from{transform:translateY(0);}
+to{transform:translateY(-12px);}
+}
+
+.fade-out{
+animation:fadeOut 0.8s forwards;
+}
+
+@keyframes fadeOut{
+to{opacity:0; transform:scale(0.5);}
+}
+
+/* Modal */
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:none;
+justify-content:center;
+align-items:center;
+padding:20px;
+z-index:20;
+}
+
+.modal-content{
+background:white;
+padding:25px;
+border-radius:20px;
+max-width:500px;
+width:100%;
+text-align:center;
+}
+
+.modal-content h3{
+color:#ff4e9b;
+margin-bottom:10px;
+}
+
+.close-btn{
+margin-top:15px;
+padding:8px 20px;
+border:none;
+border-radius:20px;
+background:#ff4e9b;
+color:white;
+cursor:pointer;
+}
+
+/* Naveen Image Grid */
+.image-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+gap:12px;
+margin-top:10px;
+}
+
+.image-grid img{
+width:100%;
+height:150px;
+object-fit:cover;
+border-radius:12px;
+cursor:pointer;
+}
+
+/* Fullscreen Viewer */
+.fullscreen-view{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
+
+.fullscreen-view img{
+max-width:90%;
+max-height:90%;
+border-radius:15px;
+}
+
+@media(min-width:768px){
+.friend-bubble{
+width:140px;
+height:140px;
+font-size:16px;
+}
+.image-grid img{
+height:180px;
+}
+}
+</style>
+</head>
+<audio id="bgMusic" loop>
+    <source src="hbd.mp3" type="audio/mpeg">
+</audio>
+
+<body>
+
+<button class="start-btn" onclick="startSurprise()">
+💖 Some cute things are waiting for you 💖
+</button>
+
+<div class="modal" id="messageModal">
+<div class="modal-content">
+<h3 id="friendName"></h3>
+<p id="friendMessage"></p>
+<div id="naveenImages"></div>
+<button class="close-btn" onclick="closeModal()">Close</button>
+</div>
+</div>
+
+<!-- Fullscreen Image Viewer -->
+<div class="fullscreen-view" id="fullscreenViewer" onclick="closeFullscreen()">
+<img id="fullscreenImg">
+</div>
+
+<script>
+const friends=[
+{name:"Rakesh",emoji:"💙",message:"Happy Birthday, Baa. I am fortunate to have you in my life. You’re the one person who always has my back, no matter what I’m going through. Thank you for being my constant support and strength. You are meant to me more than you know :)"},
+{name:"Harish",emoji:"🔥",message:"Arey hawle happy birthday ra Love you❤"},
+{name:"Amulya",emoji:"💫",message:"To  TFI Banasa From being colleagues to becoming like family, our journey has been filled with countless memories, laughter, and moments I will always cherish. Every time we meet, it feels special .May this year bring you all the success and true soulmate (Twaraga vadinani tesukoni ra I am waiting wedding pics kosam ) Enka nuvvu anukunnavi anni goals reach ayipothav I wish .Wishing you a very happy birthday 🎂✨ And yes… don’t forget to bring chocolates and ice creams 🍫🍨😄"},
+{name:"Raju",emoji:"🎉",message:"Happiest Birthday 🥳🎂Raa Partner in Crime 🙅💢. Nv korukunna..maku thelisina..😜Ammai tho thondaraga pelli jarigi,Mee iddari relation Thums Up 🥤 & Ice 🧊 laa undalani korukuntu.... Ne Next Birthday nee love ❤(future wife ) tho kalisi jarupukovali ani Aasisthunna nee left kidney"},
+{name:"Swapna",emoji:"💖",message:"Happy Birthday Ranjith 🥳💟🎊⭐🥹 God bless you Monkey. I really hope you get everything you have been wishing for. Can’t believe it’s been more than 10 years since we first met… time really flew. I am honestly so grateful our friendship has lasted this long. So proud of you. I have seen your journey from our PUC II days till now, and the way you have grown into such a strong and responsible man is amazing.  It makes me genuinely happy to see you doing well. And thank you for always being there for me, that means more than you know.Meet me soon okay? And please pelli chesuko 😂 but nannu sampaku every time nuvvu eppudu chesukuntav ani adgi adgi! That’s my only request 😜 JK do well and be happy"},
+{name:"Einstein",emoji:"🌟",message:"Never change!"},
+{name:"Haritha",emoji:"🎂",message:"Another year awesome!"},
+{name:"Naveen",emoji:"💝"}
+];
+
+let activeBubbles=[];
+let started=false;
+
+function createHearts(){
+for(let i=0;i<20;i++){
+let heart=document.createElement("div");
+heart.className="heart";
+heart.innerText=["💖","💕","✨","💝"][Math.floor(Math.random()*4)];
+heart.style.left=Math.random()*100+"%";
+heart.style.animationDuration=(5+Math.random()*5)+"s";
+document.body.appendChild(heart);
+}
+}
+createHearts();
+
+function startSurprise(){
+if(started) return;
+started=true;
+generateBubbles();
+setInterval(generateBubbles,10000);
+}
+
+function generateBubbles(){
+
+activeBubbles.forEach(b=>{
+b.classList.add("fade-out");
+setTimeout(()=>b.remove(),800);
+});
+activeBubbles=[];
+
+let shuffled=[...friends].sort(()=>Math.random()-0.5);
+let count=Math.floor(Math.random()*2)+2;
+
+const cornerPositions=[
+{top:"5%",left:"5%"},
+{top:"5%",right:"5%"},
+{bottom:"5%",left:"5%"},
+{bottom:"5%",right:"5%"}
+];
+
+for(let i=0;i<count;i++){
+let friend=shuffled[i];
+let bubble=document.createElement("div");
+bubble.className="friend-bubble";
+bubble.innerHTML=`<span>${friend.emoji}</span>${friend.name}`;
+
+let pos=cornerPositions[Math.floor(Math.random()*cornerPositions.length)];
+for(let key in pos){
+bubble.style[key]=pos[key];
+}
+
+bubble.onclick=()=>openMessage(friend);
+document.body.appendChild(bubble);
+activeBubbles.push(bubble);
+}
+
+setTimeout(()=>{
+activeBubbles.forEach(b=>{
+b.classList.add("fade-out");
+setTimeout(()=>b.remove(),800);
+});
+activeBubbles=[];
+},5000);
+}
+
+function openMessage(friend){
+document.getElementById("friendName").innerText=friend.name;
+document.getElementById("friendMessage").innerText="";
+document.getElementById("naveenImages").innerHTML="";
+
+if(friend.name==="Naveen"){
+let images=["image1.jpeg","image2.jpeg","image3.jpeg","image4.jpeg"];
+let grid=document.createElement("div");
+grid.className="image-grid";
+
+images.forEach(src=>{
+let img=document.createElement("img");
+img.src=src;
+img.onclick=function(){
+openFullscreen(src);
+};
+grid.appendChild(img);
+});
+
+document.getElementById("naveenImages").appendChild(grid);
+
+}else{
+document.getElementById("friendMessage").innerText=friend.message;
+}
+
+document.getElementById("messageModal").style.display="flex";
+}
+
+function openFullscreen(src){
+let viewer=document.getElementById("fullscreenViewer");
+let img=document.getElementById("fullscreenImg");
+img.src=src;
+viewer.style.display="flex";
+}
+
+function closeFullscreen(){
+document.getElementById("fullscreenViewer").style.display="none";
+}
+
+function closeModal(){
+document.getElementById("messageModal").style.display="none";
+}
+</script>
+<script>
+window.addEventListener("load", function () {
+
+    const music = document.getElementById("bgMusic");
+
+    if (localStorage.getItem("musicPlaying") === "true") {
+
+        let savedTime = localStorage.getItem("musicTime");
+
+        if (savedTime) {
+            music.currentTime = savedTime;
+        }
+
+        music.play();
+
+        music.addEventListener("timeupdate", function () {
+            localStorage.setItem("musicTime", music.currentTime);
+        });
+    }
+
+});
+</script>
+
+
+</body>
+</html>
