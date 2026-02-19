@@ -232,13 +232,16 @@ const friends=[
 {name:"Amulya",emoji:"💫",message:"To  TFI Banasa From being colleagues to becoming like family, our journey has been filled with countless memories, laughter, and moments I will always cherish. Every time we meet, it feels special .May this year bring you all the success and true soulmate (Twaraga vadinani tesukoni ra I am waiting wedding pics kosam ) Enka nuvvu anukunnavi anni goals reach ayipothav I wish .Wishing you a very happy birthday 🎂✨ And yes… don’t forget to bring chocolates and ice creams 🍫🍨😄"},
 {name:"Raju",emoji:"🎉",message:"Happiest Birthday 🥳🎂Raa Partner in Crime 🙅💢. Nv korukunna..maku thelisina..😜Ammai tho thondaraga pelli jarigi,Mee iddari relation Thums Up 🥤 & Ice 🧊 laa undalani korukuntu.... Ne Next Birthday nee love ❤(future wife ) tho kalisi jarupukovali ani Aasisthunna nee left kidney"},
 {name:"Swapna",emoji:"💖",message:"Happy Birthday Ranjith 🥳💟🎊⭐🥹 God bless you Monkey. I really hope you get everything you have been wishing for. Can’t believe it’s been more than 10 years since we first met… time really flew. I am honestly so grateful our friendship has lasted this long. So proud of you. I have seen your journey from our PUC II days till now, and the way you have grown into such a strong and responsible man is amazing.  It makes me genuinely happy to see you doing well. And thank you for always being there for me, that means more than you know.Meet me soon okay? And please pelli chesuko 😂 but nannu sampaku every time nuvvu eppudu chesukuntav ani adgi adgi! That’s my only request 😜 JK do well and be happy"},
-{name:"Einstein",emoji:"🌟",message:"Never change!"},
-{name:"Haritha",emoji:"🎂",message:"Another year awesome!"},
+{name:"Einstein",emoji:"🌟",message:"Ranjith... They say life is race , you need to run but u already RAN.. They say you need to win in life but you already JEETH... So they say all But You be yourself .... you win yourself more and more ...... Strengthen your muscles with more smiles...I wish you many many happy returns of the day man... And also I wish you will have your wealth 🫣 ( iykyk )"},
+{name:"Haritha",emoji:"🎂",message:"Namaskaram Ranjith Garu, Many many happy returns of the dayyy🐒💃💃 The vibe we have when we are together is really what I miss always🫠 Those movie discussions (Ps: I still remember the discussion we had for animal😵‍💫) and your BC time song recommendations (it's ok as you were born that time you would have listened to those songs only🤪) and as you r the biggg fellow u know that we r Waiting for ur marriage so that we can dressup dance and chill💃💃.Temqs for those bike rides from ofc to my hostel even though u would be on call during those rides😛(it's ok understandable) You always glow up our moods with all those mvie discussions rey..Keep up your vibe and never become influenced by some toxic people or mvie characters😬 Cheers to our prndship collegueship😂 I have written sooo much and tried to write everything in english as u r a rich guy ryt now😛 Vokayy appy burrdayy enjaaay byeeeeeeeeee.."},
 {name:"Naveen",emoji:"💝"}
 ];
 
 let activeBubbles=[];
 let started=false;
+let viewedFriends=new Set();
+let bubbleInterval=null;
+let allViewed=false;
 
 function createHearts(){
 for(let i=0;i<20;i++){
@@ -253,13 +256,22 @@ document.body.appendChild(heart);
 createHearts();
 
 function startSurprise(){
+
+if(allViewed){
+window.location.href="index.html";
+return;
+}
+
 if(started) return;
 started=true;
+
 generateBubbles();
-setInterval(generateBubbles,10000);
+bubbleInterval=setInterval(generateBubbles,10000);
 }
 
 function generateBubbles(){
+
+if(allViewed) return;
 
 activeBubbles.forEach(b=>{
 b.classList.add("fade-out");
@@ -303,12 +315,15 @@ activeBubbles=[];
 }
 
 function openMessage(friend){
+
+viewedFriends.add(friend.name);
+
 document.getElementById("friendName").innerText=friend.name;
 document.getElementById("friendMessage").innerText="";
 document.getElementById("naveenImages").innerHTML="";
 
 if(friend.name==="Naveen"){
-let images=["Image1.jpeg","Image2.jpeg","Image3.jpeg","Image4.jpeg"];
+let images=["image1.jpeg","image2.jpeg","image3.jpeg","image4.jpeg"];
 let grid=document.createElement("div");
 grid.className="image-grid";
 
@@ -328,6 +343,53 @@ document.getElementById("friendMessage").innerText=friend.message;
 }
 
 document.getElementById("messageModal").style.display="flex";
+
+checkAllViewed();
+}
+
+function checkAllViewed(){
+
+if(viewedFriends.size===friends.length){
+
+allViewed=true;
+
+clearInterval(bubbleInterval);
+
+activeBubbles.forEach(b=>b.remove());
+activeBubbles=[];
+
+document.querySelector(".start-btn").innerText=
+"💖 Thank you for Visited this Website. Once Again Happy Birthday💖";
+
+launchConfetti();
+}
+}
+
+function launchConfetti(){
+for(let i=0;i<120;i++){
+let conf=document.createElement("div");
+conf.style.position="fixed";
+conf.style.width="8px";
+conf.style.height="8px";
+conf.style.backgroundColor=
+["#ff4e9b","#ffd700","#00eaff","#7cff00","#ff6ec4"][Math.floor(Math.random()*5)];
+conf.style.top="-10px";
+conf.style.left=Math.random()*100+"%";
+conf.style.opacity="0.9";
+conf.style.borderRadius="50%";
+conf.style.zIndex="9999";
+conf.style.transition="transform 3s linear, opacity 3s linear";
+document.body.appendChild(conf);
+
+setTimeout(()=>{
+conf.style.transform="translateY(100vh) rotate(720deg)";
+conf.style.opacity="0";
+},50);
+
+setTimeout(()=>{
+conf.remove();
+},3000);
+}
 }
 
 function openFullscreen(src){
@@ -358,7 +420,9 @@ window.addEventListener("load", function () {
             music.currentTime = savedTime;
         }
 
-        music.play();
+        music.play().catch(() => {
+            console.log("Autoplay prevented until user interaction.");
+        });
 
         music.addEventListener("timeupdate", function () {
             localStorage.setItem("musicTime", music.currentTime);
@@ -369,6 +433,6 @@ window.addEventListener("load", function () {
 </script>
 
 
+
 </body>
 </html>
-
